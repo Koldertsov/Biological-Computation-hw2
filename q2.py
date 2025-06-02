@@ -104,6 +104,57 @@ def generate_all_unique_motifs(n):
     sorted_motifs = sorted(unique_motifs.items())
     return sorted_motifs
 
+def write_motifs_to_file(all_motifs, motif_counts, n, filename):
+    """
+    Write motifs and their counts to a file.
+    """
+    with open(filename, "w") as f:
+        f.write(f"Motif size: n={n}\n")
+        f.write(f"Total unique motifs: {len(all_motifs)}\n\n")
+        
+        for idx, (canonical_form, edge_list) in enumerate(all_motifs, 1):
+            f.write(f"#{idx}\n")
+            
+            # Write edges
+            for u, v in edge_list:
+                f.write(f"{u+1} {v+1}\n")
+            
+            # Write count
+            count = motif_counts.get(canonical_form, 0)
+            f.write(f"count={count}\n")
+            
+            if idx < len(all_motifs):
+                f.write("\n")
+
+def print_and_save_results(all_motifs, motif_counts, n):
+    """
+    Print results to console and save to file.
+    """
+    # Generate filename based on motif size
+    output_filename = f"motifs_n{n}.txt"
+    
+    # Write to file
+    write_motifs_to_file(all_motifs, motif_counts, n, output_filename)
+    print(f"Output saved to {output_filename}")
+    
+    # Also print to console
+    print(f"\nMotif size: n={n}")
+    print(f"Total unique motifs: {len(all_motifs)}\n")
+    
+    for idx, (canonical_form, edge_list) in enumerate(all_motifs, 1):
+        print(f"#{idx}")
+        
+        # Output edges
+        for u, v in edge_list:
+            print(f"{u+1} {v+1}")
+        
+        # Output count
+        count = motif_counts.get(canonical_form, 0)
+        print(f"count={count}")
+        
+        if idx < len(all_motifs):
+            print()
+
 def main():
     # Read input
     n, edges, vertices = read_input()
@@ -124,20 +175,8 @@ def main():
             canonical = subgraph_to_canonical(vertex_subset, subgraph_edges)
             motif_counts[canonical] += 1
     
-    # Output results
-    for idx, (canonical_form, edge_list) in enumerate(all_motifs, 1):
-        print(f"#{idx}")
-        
-        # Output edges
-        for u, v in edge_list:
-            print(f"{u+1} {v+1}")
-        
-        # Output count
-        count = motif_counts.get(canonical_form, 0)
-        print(f"count={count}")
-        
-        if idx < len(all_motifs):
-            print()
+    # Output results to both console and file
+    print_and_save_results(all_motifs, motif_counts, n)
 
 if __name__ == "__main__":
     main()
